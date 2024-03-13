@@ -23,7 +23,9 @@ final class PosterVC: UIViewController {
         super.init(nibName: nil, bundle: nil)
         viewModel.delegate = self
     }
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
     
     // - Variables: UI
     @IBOutlet weak var tableView: UITableView!
@@ -31,11 +33,13 @@ final class PosterVC: UIViewController {
     // - Lifecycle: View
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel.viewDidLoad()
     }
 }
 
 // - Conformance: Class Contract 
 extension PosterVC: ContractForPosterVC {
+    
     func setupTableView() {
         self.tableView.delegate = self
         self.tableView.dataSource = self
@@ -44,38 +48,43 @@ extension PosterVC: ContractForPosterVC {
 }
 
 // - Nofity: MVVM
-
 extension PosterVC: DelegateOfPosterVM {
-    // TODO:
+    
+    func didLoadPosters() {
+        // Out of scope
+    }
 }
 
 // - TableView: Datasource Methods
-
 extension PosterVC: UITableViewDataSource {
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // TODO: get value
-        return 0
+        viewModel.posters.count
     }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // TODO: return configured posterCell()
-        return UITableViewCell()
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: PosterCell.reuseId, for: indexPath) as? PosterCell
+        else { fatalError("Fatal: @cellForRowAt()")}
+        guard let data = viewModel.getPoster(at: indexPath)
+        else { fatalError("Fatal2: @cellForRowAt()")}
+        cell.configure(with: data)
+        return cell
     }
 }
 
 // - TableView: Delegate Methods
-
 extension PosterVC: UITableViewDelegate {
+    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 20
+        return 120
     }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // TODO: Navigate to detail if you want
+        // TODO: Navigate To Detail Page
     }
 }
 
 // - Extended: Helper Class Methods
- 
 extension PosterVC {
-    
     // TODO: In-case
 }
